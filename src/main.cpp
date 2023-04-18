@@ -43,6 +43,9 @@ int main()
   float lastFrame = 0.0f;
 
   glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+
+  GLCall(glEnable(GL_BLEND));
+  GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
   while (!glfwWindowShouldClose(window))
   {
     glClear(GL_COLOR_BUFFER_BIT);

@@ -3,6 +3,7 @@
 #include "MyMath.hpp"
 #include "Macros.hpp"
 #include "Assets.hpp"
+#include "Font.hpp"
 
 void GLClearError();
 bool GLLogCall(const char *function, const char *file, int line);
@@ -33,6 +34,8 @@ public:
   Renderer();
   ~Renderer();
 
+  void Clear();
+
   void Init();
   void BeginBatch();
   void Flush();
@@ -41,4 +44,6 @@ public:
   void DrawQuad(const glm::vec2 &pos, const glm::vec2 &size, const glm::vec4 &color);
   void DrawQuad(const glm::vec2 &pos, const glm::vec2 &size, uint32_t textureId);
   void DrawQuad(const glm::vec2 &pos, const glm::vec2 &size, Sprite sprite);
+
+  void DrawText(const std::string &text, Font *font, const glm::vec2 &pos, float scale);
 };
