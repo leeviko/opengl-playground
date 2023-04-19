@@ -24,7 +24,7 @@ void Game::Init()
     samplers[i] = i;
   }
 
-  ResourceManager::GetShader("quad").Use().SetIntegerv("u_Textures", samplers, false);
+  ResourceManager::GetShader("quad").Use().SetIntegerv("u_Textures", samplers);
 
   Assets::Get().LoadAtlas("D:/Dev/Cpp/OpenGL/atlas/src/assets/tilemap.png", "atlas");
 
@@ -50,8 +50,8 @@ void Game::Update(float dt)
   float aspectRatio = (float)Width / (float)Height;
   glm::mat4 proj = glm::ortho(-aspectRatio * m_ZoomLevel, aspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel, -1.0f, 1.0f);
 
-  ResourceManager::GetShader("quad").Use().SetMatrix4("u_MVP", proj, false);
-  ResourceManager::GetShader("font").Use().SetMatrix4("proj", proj, false);
+  ResourceManager::GetShader("quad").Use().SetMatrix4("u_MVP", proj);
+  ResourceManager::GetShader("font").Use().SetMatrix4("proj", proj);
 
   renderer.BeginBatch();
 
@@ -68,11 +68,11 @@ void Game::ProcessInput(uint32_t f1KeyState, uint32_t f2KeyState)
 {
   if (f1KeyState == GLFW_PRESS)
   {
-    m_ZoomLevel += 0.05f;
+    if (m_ZoomLevel >= 0.05f)
+      m_ZoomLevel -= 0.05f;
   }
   if (f2KeyState == GLFW_PRESS)
   {
-    if (m_ZoomLevel >= 0.05f)
-      m_ZoomLevel -= 0.05f;
+    m_ZoomLevel += 0.05f;
   }
 }

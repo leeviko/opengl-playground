@@ -182,7 +182,7 @@ void Renderer::Flush()
 
     GLCall(glActiveTexture(GL_TEXTURE0));
     GLCall(glBindTexture(GL_TEXTURE_2D, s_Data.FontAtlasTexId));
-    ResourceManager::GetShader("font").SetInteger("tex", 0, false);
+    ResourceManager::GetShader("font").SetInteger("tex", 0);
 
     GLCall(glDrawElements(GL_TRIANGLES, s_Data.TextIndexCount, GL_UNSIGNED_INT, 0));
   }

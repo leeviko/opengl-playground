@@ -29,12 +29,6 @@ int main()
     return -1;
   }
 
-  int samplers[32];
-  for (int i = 0; i < 32; i++)
-  {
-    samplers[i] = i;
-  }
-
   Game game(SCREEN_WIDTH, SCREEN_HEIGHT);
 
   game.Init();

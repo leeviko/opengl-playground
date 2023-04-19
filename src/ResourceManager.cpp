@@ -46,7 +46,6 @@ Shader ResourceManager::loadShaderFromFile(const char *vShaderFile, const char *
   // 1. retrieve the vertex/fragment source code from filePath
   std::string vertexCode;
   std::string fragmentCode;
-  std::string geometryCode;
   try
   {
     // open files
