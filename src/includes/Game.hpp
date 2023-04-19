@@ -1,4 +1,6 @@
 #pragma once
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 #include <iostream>
 #include "Renderer.hpp"
 
@@ -9,11 +11,15 @@ private:
   Font font;
   uint32_t Width, Height;
   float m_ZoomLevel;
+  glm::vec2 m_Pos;
 
 public:
+  bool Keys[348];
+  float ScrollOffset;
+
   Game(uint32_t width, uint32_t height);
   ~Game();
   void Init();
   void Update(float dt);
-  void ProcessInput(uint32_t f1KeyState, uint32_t f2KeyState);
+  void HandleInput(float dt);
 };

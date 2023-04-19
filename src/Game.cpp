@@ -4,7 +4,7 @@
 #include "Assets.hpp"
 #include "Font.hpp"
 
-Game::Game(uint32_t width, uint32_t height) : Width(width), Height(height), m_ZoomLevel(0.0f)
+Game::Game(uint32_t width, uint32_t height) : Width(width), Height(height), m_ZoomLevel(5.0f), m_Pos({0.0f, 0.0f}), Keys(), ScrollOffset(0.0f)
 {
 }
 Game::~Game()
@@ -46,9 +46,13 @@ void Game::Init()
 
 void Game::Update(float dt)
 {
-
   float aspectRatio = (float)Width / (float)Height;
-  glm::mat4 proj = glm::ortho(-aspectRatio * m_ZoomLevel, aspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel, -1.0f, 1.0f);
+  float left = -aspectRatio * m_ZoomLevel + m_Pos.x;
+  float right = aspectRatio * m_ZoomLevel + m_Pos.x;
+  float top = -m_ZoomLevel + m_Pos.y;
+  float bottom = m_ZoomLevel + m_Pos.y;
+
+  glm::mat4 proj = glm::ortho(left, right, top, bottom, -1.0f, 1.0f);
 
   ResourceManager::GetShader("quad").Use().SetMatrix4("u_MVP", proj);
   ResourceManager::GetShader("font").Use().SetMatrix4("proj", proj);
@@ -57,22 +61,36 @@ void Game::Update(float dt)
 
   renderer.DrawText("Hello World!", &this->font, {0.0f, 0.0f}, 0.01f);
 
-  renderer.DrawQuad({0.0f, 0.0f}, {1.0f, 1.0f}, Assets::Get().GetSprite(VELHO));
+  renderer.DrawQuad({((left + right) / 2.0f), ((top + bottom) / 2.0f)}, {1.0f, 1.0f}, Assets::Get().GetSprite(VELHO));
   renderer.DrawQuad({1.0f, 0.0f}, {1.0f, 1.0f}, {1.0f, 0.5f, 0.5f, 1.0f});
 
   renderer.EndBatch();
   renderer.Flush();
 }
 
-void Game::ProcessInput(uint32_t f1KeyState, uint32_t f2KeyState)
+void Game::HandleInput(float dt)
 {
-  if (f1KeyState == GLFW_PRESS)
+  if (ScrollOffset > 0.0f && m_ZoomLevel > 1.0f)
+    m_ZoomLevel -= ScrollOffset * 15.0f * dt;
+  else if (ScrollOffset < 0.0f && m_ZoomLevel < 10.0f)
+    m_ZoomLevel -= ScrollOffset * 15.0f * dt;
+  ScrollOffset = 0.0f;
+
+  if (Keys[GLFW_KEY_A])
   {
-    if (m_ZoomLevel >= 0.05f)
-      m_ZoomLevel -= 0.05f;
+    m_Pos.x -= 10.0f * dt;
   }
-  if (f2KeyState == GLFW_PRESS)
+  else if (Keys[GLFW_KEY_D])
   {
-    m_ZoomLevel += 0.05f;
+    m_Pos.x += 10.0f * dt;
+  }
+
+  if (Keys[GLFW_KEY_W])
+  {
+    m_Pos.y += 10.0f * dt;
+  }
+  else if (Keys[GLFW_KEY_S])
+  {
+    m_Pos.y -= 10.0f * dt;
   }
 }

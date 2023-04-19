@@ -6,6 +6,11 @@
 uint32_t SCREEN_WIDTH = 1270;
 uint32_t SCREEN_HEIGHT = 720;
 
+void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
+void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
+
+Game game(SCREEN_WIDTH, SCREEN_HEIGHT);
+
 int main()
 {
   glfwInit();
@@ -29,9 +34,10 @@ int main()
     return -1;
   }
 
-  Game game(SCREEN_WIDTH, SCREEN_HEIGHT);
-
   game.Init();
+
+  glfwSetKeyCallback(window, key_callback);
+  glfwSetScrollCallback(window, scroll_callback);
 
   float deltaTime = 0.0f;
   float lastFrame = 0.0f;
@@ -48,12 +54,9 @@ int main()
     deltaTime = currFrame - lastFrame;
     lastFrame = currFrame;
 
-    uint32_t f1KeyState = glfwGetKey(window, GLFW_KEY_F1);
-    uint32_t f2KeyState = glfwGetKey(window, GLFW_KEY_F2);
-
-    game.ProcessInput(f1KeyState, f2KeyState);
-
     game.Update(deltaTime);
+
+    game.HandleInput(deltaTime);
 
     glfwSwapBuffers(window);
     glfwPollEvents();
@@ -61,4 +64,20 @@ int main()
 
   glfwTerminate();
   return 0;
+}
+
+void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode)
+{
+  if (key >= 0 && key < 348)
+  {
+    if (action == GLFW_PRESS)
+      game.Keys[key] = true;
+    else if (action == GLFW_RELEASE)
+      game.Keys[key] = false;
+  }
+}
+
+void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
+{
+  game.ScrollOffset = (float)yoffset;
 }
