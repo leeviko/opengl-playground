@@ -9,22 +9,38 @@ Assets &Assets::Get()
 
 void Assets::LoadAtlas(const char *path, std::string name)
 {
-  uint32_t texId = ResourceManager::LoadTexture(path, true, name).textureId;
+  Texture tex = ResourceManager::LoadTexture(path, true, name);
 
-  m_Atlases.insert({name, texId});
+  m_Atlases.emplace(name, tex);
 }
 
-uint32_t Assets::GetAtlas(std::string name)
+Texture Assets::GetAtlas(std::string name)
 {
   return m_Atlases[name];
 }
 
-Sprite Assets::GetSprite(SpriteType name)
+void Assets::LoadSprites()
 {
-  return m_SpriteData[name];
+
+  Sprite grass;
+  grass.Atlas = Assets::Get().GetAtlas("atlas");
+  grass.Offset = {0, 15};
+  grass.Size = {16.0f, 16.0f};
+  Assets::Get().SetSprite(GRASS, grass);
+
+  Sprite guy;
+  guy.Atlas = Assets::Get().GetAtlas("atlas");
+  guy.Offset = {6, 15};
+  guy.Size = {16.0f, 32.0f};
+  Assets::Get().SetSprite(GUY, guy);
 }
 
-void Assets::SetSprite(SpriteType name, Sprite data)
+Sprite Assets::GetSprite(SpriteType name)
 {
-  m_SpriteData.insert({name, data});
+  return m_Sprites[name];
+}
+
+void Assets::SetSprite(SpriteType name, const Sprite &data)
+{
+  m_Sprites.emplace(name, data);
 }

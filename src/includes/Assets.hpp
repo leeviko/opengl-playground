@@ -3,16 +3,19 @@
 #include <string>
 #include "MyMath.hpp"
 #include <unordered_map>
+#include "Texture.hpp"
 
 enum SpriteType
 {
   VELHO,
-  LEPAKKO
+  LEPAKKO,
+  GRASS,
+  GUY
 };
 
 struct Sprite
 {
-  uint32_t AtlasTexId;
+  Texture Atlas;
   glm::vec2 Offset;
   glm::vec2 Size;
 };
@@ -24,13 +27,15 @@ public:
   static Assets &Get();
 
   void LoadAtlas(const char *path, std::string name);
-  uint32_t Assets::GetAtlas(std::string name);
+  Texture Assets::GetAtlas(std::string name);
 
   Sprite GetSprite(SpriteType name);
-  void SetSprite(SpriteType name, Sprite data);
+  void SetSprite(SpriteType name, const Sprite &data);
+
+  void LoadSprites();
 
 private:
   Assets() {}
-  std::unordered_map<SpriteType, Sprite> m_SpriteData;
-  std::unordered_map<std::string, uint32_t> m_Atlases;
+  std::unordered_map<SpriteType, Sprite> m_Sprites;
+  std::unordered_map<std::string, Texture> m_Atlases;
 };

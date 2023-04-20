@@ -46,6 +46,8 @@ struct RendererData
   glm::vec4 QuadVertexPositions[4];
 
   std::array<uint32_t, MaxTextureSlots> TextureSlots;
+
+  Renderer::Stats Stats;
 };
 
 RendererData s_Data;
@@ -174,6 +176,7 @@ void Renderer::Flush()
     ResourceManager::GetShader("quad").Use();
     GLCall(glBindVertexArray(s_Data.QuadVA));
     GLCall(glDrawElements(GL_TRIANGLES, s_Data.QuadIndexCount, GL_UNSIGNED_INT, 0));
+    s_Data.Stats.DrawCalls++;
   }
   if (s_Data.TextIndexCount)
   {
@@ -185,6 +188,7 @@ void Renderer::Flush()
     ResourceManager::GetShader("font").SetInteger("tex", 0);
 
     GLCall(glDrawElements(GL_TRIANGLES, s_Data.TextIndexCount, GL_UNSIGNED_INT, 0));
+    s_Data.Stats.DrawCalls++;
   }
 
   s_Data.QuadIndexCount = 0;
@@ -231,6 +235,7 @@ void Renderer::DrawQuad(const glm::vec2 &pos, const glm::vec2 &size, const glm::
   s_Data.QuadBufferPtr++;
 
   s_Data.QuadIndexCount += 6;
+  s_Data.Stats.QuadCount++;
 }
 
 void Renderer::DrawQuad(const glm::vec2 &pos, const glm::vec2 &size, uint32_t textureId)
@@ -291,6 +296,7 @@ void Renderer::DrawQuad(const glm::vec2 &pos, const glm::vec2 &size, uint32_t te
   s_Data.QuadBufferPtr++;
 
   s_Data.QuadIndexCount += 6;
+  s_Data.Stats.QuadCount++;
 }
 
 void Renderer::DrawQuad(const glm::vec2 &pos, const glm::vec2 &size, Sprite sprite)
@@ -308,7 +314,7 @@ void Renderer::DrawQuad(const glm::vec2 &pos, const glm::vec2 &size, Sprite spri
   float textureIndex = 0.0f;
   for (uint32_t i = 1; i < s_Data.TextureIndex; i++)
   {
-    if (s_Data.TextureSlots[i] == sprite.AtlasTexId)
+    if (s_Data.TextureSlots[i] == sprite.Atlas.textureId)
     {
       textureIndex = (float)i;
       break;
@@ -318,35 +324,36 @@ void Renderer::DrawQuad(const glm::vec2 &pos, const glm::vec2 &size, Sprite spri
   if (textureIndex == 0.0f)
   {
     textureIndex = (float)s_Data.TextureIndex;
-    s_Data.TextureSlots[s_Data.TextureIndex] = sprite.AtlasTexId;
+    s_Data.TextureSlots[s_Data.TextureIndex] = sprite.Atlas.textureId;
     s_Data.TextureIndex++;
   }
 
   s_Data.QuadBufferPtr->Position = transform * s_Data.QuadVertexPositions[0];
   s_Data.QuadBufferPtr->Color = color;
-  s_Data.QuadBufferPtr->TexCoords = {(sprite.Offset.x * sprite.Size.x) / 192.0f, (sprite.Offset.y * sprite.Size.y) / 176.0f};
+  s_Data.QuadBufferPtr->TexCoords = {(sprite.Offset.x * sprite.Size.x) / sprite.Atlas.width, (sprite.Offset.y * sprite.Size.y) / sprite.Atlas.height};
   s_Data.QuadBufferPtr->TexIndex = textureIndex;
   s_Data.QuadBufferPtr++;
 
   s_Data.QuadBufferPtr->Position = transform * s_Data.QuadVertexPositions[1];
   s_Data.QuadBufferPtr->Color = color;
-  s_Data.QuadBufferPtr->TexCoords = {((sprite.Offset.x + 1) * sprite.Size.x) / 192.0f, (sprite.Offset.y * sprite.Size.y) / 176.0f};
+  s_Data.QuadBufferPtr->TexCoords = {((sprite.Offset.x + 1.0f) * sprite.Size.x) / sprite.Atlas.width, (sprite.Offset.y * sprite.Size.y) / sprite.Atlas.height};
   s_Data.QuadBufferPtr->TexIndex = textureIndex;
   s_Data.QuadBufferPtr++;
 
   s_Data.QuadBufferPtr->Position = transform * s_Data.QuadVertexPositions[2];
   s_Data.QuadBufferPtr->Color = color;
-  s_Data.QuadBufferPtr->TexCoords = {((sprite.Offset.x + 1) * sprite.Size.x) / 192.0f, ((sprite.Offset.y + 1) * sprite.Size.y) / 176.0f};
+  s_Data.QuadBufferPtr->TexCoords = {((sprite.Offset.x + 1.0f) * sprite.Size.x) / sprite.Atlas.width, ((sprite.Offset.y + 1.0f) * sprite.Size.y) / sprite.Atlas.height};
   s_Data.QuadBufferPtr->TexIndex = textureIndex;
   s_Data.QuadBufferPtr++;
 
   s_Data.QuadBufferPtr->Position = transform * s_Data.QuadVertexPositions[3];
   s_Data.QuadBufferPtr->Color = color;
-  s_Data.QuadBufferPtr->TexCoords = {(sprite.Offset.x * sprite.Size.x) / 192.0f, ((sprite.Offset.y + 1) * sprite.Size.y) / 176.0f};
+  s_Data.QuadBufferPtr->TexCoords = {(sprite.Offset.x * sprite.Size.x) / sprite.Atlas.width, ((sprite.Offset.y + 1.0f) * sprite.Size.y) / sprite.Atlas.height};
   s_Data.QuadBufferPtr->TexIndex = textureIndex;
   s_Data.QuadBufferPtr++;
 
   s_Data.QuadIndexCount += 6;
+  s_Data.Stats.QuadCount++;
 }
 
 void Renderer::DrawText(const std::string &text, Font *font, const glm::vec2 &pos, float scale)
@@ -391,6 +398,7 @@ void Renderer::DrawText(const std::string &text, Font *font, const glm::vec2 &po
     s_Data.TextBufferPtr++;
 
     s_Data.TextIndexCount += 6;
+    s_Data.Stats.QuadCount++;
 
     x += charData.Advance.x * scale;
   }
@@ -409,4 +417,14 @@ void Renderer::Clear()
 
   delete[] s_Data.QuadBuffer;
   delete[] s_Data.TextBuffer;
+}
+
+void Renderer::ResetStats()
+{
+  memset(&s_Data.Stats, 0, sizeof(Stats));
+}
+
+Renderer::Stats Renderer::GetStats()
+{
+  return s_Data.Stats;
 }

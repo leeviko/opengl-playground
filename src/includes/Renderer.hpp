@@ -13,13 +13,6 @@ static const uint32_t MaxVertices = MaxQuads * 4;
 static const uint32_t MaxIndices = MaxQuads * 6;
 static const uint32_t MaxTextureSlots = 32;
 
-struct TileData
-{
-  uint32_t X = 0, Y = 0;
-  float SheetWidth = 192.0f, SheetHeight = 176.0f;
-  float SpriteWidth = 16.0f, SpriteHeight = 16.0f;
-};
-
 struct Vertex
 {
   glm::vec3 Position;
@@ -46,4 +39,12 @@ public:
   void DrawQuad(const glm::vec2 &pos, const glm::vec2 &size, Sprite sprite);
 
   void DrawText(const std::string &text, Font *font, const glm::vec2 &pos, float scale);
+
+  struct Stats
+  {
+    uint32_t DrawCalls = 0;
+    uint32_t QuadCount = 0;
+  };
+  void ResetStats();
+  Stats GetStats();
 };

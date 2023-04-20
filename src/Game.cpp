@@ -26,14 +26,9 @@ void Game::Init()
 
   ResourceManager::GetShader("quad").Use().SetIntegerv("u_Textures", samplers);
 
-  Assets::Get().LoadAtlas("D:/Dev/Cpp/OpenGL/atlas/src/assets/tilemap.png", "atlas");
+  Assets::Get().LoadAtlas("D:/ART/Aseprite/Atlas.png", "atlas");
 
-  Sprite velho;
-  velho.AtlasTexId = Assets::Get().GetAtlas("atlas");
-  velho.Offset = {0, 3};
-  velho.Size = {16.0f, 16.0f};
-
-  Assets::Get().SetSprite(VELHO, velho);
+  Assets::Get().LoadSprites();
 
   Font font;
   font.CreateAtlas("D:/Dev/Cpp/OpenGL/atlas/src/assets/fonts/Poppins.ttf");
@@ -57,12 +52,25 @@ void Game::Update(float dt)
   ResourceManager::GetShader("quad").Use().SetMatrix4("u_MVP", proj);
   ResourceManager::GetShader("font").Use().SetMatrix4("proj", proj);
 
+  renderer.ResetStats();
+
   renderer.BeginBatch();
 
-  renderer.DrawText("Hello World!", &this->font, {0.0f, 0.0f}, 0.01f);
+  for (int i = -25; i < 25; i++)
+  {
+    for (int j = -25; j < 25; j++)
+    {
+      renderer.DrawQuad({i, j}, {1.0f, 1.0f}, Assets::Get().GetSprite(GRASS));
+    }
+  }
 
-  renderer.DrawQuad({((left + right) / 2.0f), ((top + bottom) / 2.0f)}, {1.0f, 1.0f}, Assets::Get().GetSprite(VELHO));
+  renderer.DrawText("Hello World!", &this->font, {0.0f, 0.0f}, 0.01f);
+  renderer.DrawQuad({0.0f, 0.0f}, {1.0f, 1.0f}, Assets::Get().GetSprite(GRASS));
   renderer.DrawQuad({1.0f, 0.0f}, {1.0f, 1.0f}, {1.0f, 0.5f, 0.5f, 1.0f});
+  renderer.DrawQuad({((left + right) / 2), ((top + bottom) / 2.0f)}, {1.0f, 2.0f}, Assets::Get().GetSprite(GUY));
+
+  std::cout << "Draw calls: " << renderer.GetStats().DrawCalls << std::endl;
+  std::cout << "Quad count: " << renderer.GetStats().QuadCount << std::endl;
 
   renderer.EndBatch();
   renderer.Flush();
