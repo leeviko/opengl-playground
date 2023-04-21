@@ -10,6 +10,8 @@
         "-fansi-escape-codes",
         "-g",
         "${workspaceFolder}/src/*.c*",
+        "-g",
+        "${workspaceFolder}/src/vendor/imgui/*.c*",
         "-I${config:deps}\\includes",
         "-I${workspaceFolder}/src/includes",
         "-I${workspaceFolder}/src/vendor",

@@ -9,8 +9,7 @@ Game::Game(uint32_t width, uint32_t height) : Width(width), Height(height), m_Zo
 }
 Game::~Game()
 {
-  ResourceManager::Clear();
-  renderer.Clear();
+  delete this->renderer;
 }
 
 void Game::Init()
@@ -34,9 +33,8 @@ void Game::Init()
   font.CreateAtlas("D:/Dev/Cpp/OpenGL/atlas/src/assets/fonts/Poppins.ttf");
   this->font = font;
 
-  Renderer renderer;
-  this->renderer = renderer;
-  this->renderer.Init();
+  this->renderer = new Renderer();
+  this->renderer->Init();
 }
 
 void Game::Update(float dt)
@@ -52,28 +50,25 @@ void Game::Update(float dt)
   ResourceManager::GetShader("quad").Use().SetMatrix4("u_MVP", proj);
   ResourceManager::GetShader("font").Use().SetMatrix4("proj", proj);
 
-  renderer.ResetStats();
+  renderer->ResetStats();
 
-  renderer.BeginBatch();
+  renderer->BeginBatch();
 
   for (int i = -25; i < 25; i++)
   {
     for (int j = -25; j < 25; j++)
     {
-      renderer.DrawQuad({i, j}, {1.0f, 1.0f}, Assets::Get().GetSprite(GRASS));
+      renderer->DrawQuad({i, j}, {1.0f, 1.0f}, Assets::Get().GetSprite(GRASS));
     }
   }
 
-  renderer.DrawText("Hello World!", &this->font, {0.0f, 0.0f}, 0.01f);
-  renderer.DrawQuad({0.0f, 0.0f}, {1.0f, 1.0f}, Assets::Get().GetSprite(GRASS));
-  renderer.DrawQuad({1.0f, 0.0f}, {1.0f, 1.0f}, {1.0f, 0.5f, 0.5f, 1.0f});
-  renderer.DrawQuad({((left + right) / 2), ((top + bottom) / 2.0f)}, {1.0f, 2.0f}, Assets::Get().GetSprite(GUY));
+  renderer->DrawText("Hello World!", &this->font, {0.0f, 0.0f}, 0.01f);
+  renderer->DrawQuad({0.0f, 0.0f}, {1.0f, 1.0f}, Assets::Get().GetSprite(GRASS));
+  renderer->DrawQuad({1.0f, 0.0f}, {1.0f, 1.0f}, {1.0f, 0.5f, 0.5f, 1.0f});
+  renderer->DrawQuad({((left + right) / 2), ((top + bottom) / 2.0f)}, {1.0f, 2.0f}, Assets::Get().GetSprite(GUY));
 
-  std::cout << "Draw calls: " << renderer.GetStats().DrawCalls << std::endl;
-  std::cout << "Quad count: " << renderer.GetStats().QuadCount << std::endl;
-
-  renderer.EndBatch();
-  renderer.Flush();
+  renderer->EndBatch();
+  renderer->Flush();
 }
 
 void Game::HandleInput(float dt)

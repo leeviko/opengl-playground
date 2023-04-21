@@ -57,6 +57,7 @@ Renderer::Renderer()
 }
 Renderer::~Renderer()
 {
+  Renderer::Clear();
 }
 
 void Renderer::Init()

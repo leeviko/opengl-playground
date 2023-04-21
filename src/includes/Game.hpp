@@ -7,7 +7,7 @@
 class Game
 {
 private:
-  Renderer renderer;
+  Renderer *renderer;
   Font font;
   uint32_t Width, Height;
   float m_ZoomLevel;
