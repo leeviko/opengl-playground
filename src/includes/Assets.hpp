@@ -27,7 +27,7 @@ public:
   static Assets &Get();
 
   void LoadAtlas(const char *path, std::string name);
-  Texture Assets::GetAtlas(std::string name);
+  Texture GetAtlas(std::string name);
 
   Sprite GetSprite(SpriteType name);
   void SetSprite(SpriteType name, const Sprite &data);

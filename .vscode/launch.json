@@ -1,0 +1,13 @@
+{
+  "configurations": [
+    {
+      "name": "C/C++: clang.exe build and debug active file",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${fileDirname}\\${fileBasenameNoExtension}.exe",
+      "args": [],
+      "preLaunchTask": "C/C++: clang.exe build active file"
+    }
+  ],
+  "version": "2.0.0"
+}
