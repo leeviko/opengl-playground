@@ -12,6 +12,7 @@ private:
   uint32_t Width, Height;
   float m_ZoomLevel;
   glm::vec2 m_Pos;
+  GLFWwindow *m_Window;
 
 public:
   bool Keys[348];
@@ -19,7 +20,8 @@ public:
 
   Game(uint32_t width, uint32_t height);
   ~Game();
-  void Init();
+  void Init(GLFWwindow *window);
   void Update(float dt);
   void HandleInput(float dt);
+  void ImGuiRender();
 };

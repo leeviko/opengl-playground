@@ -3,6 +3,9 @@
 #include "GLFW/glfw3.h"
 #include "Assets.hpp"
 #include "Font.hpp"
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_opengl3.h"
 
 Game::Game(uint32_t width, uint32_t height) : Width(width), Height(height), m_ZoomLevel(5.0f), m_Pos({0.0f, 0.0f}), Keys(), ScrollOffset(0.0f)
 {
@@ -10,9 +13,12 @@ Game::Game(uint32_t width, uint32_t height) : Width(width), Height(height), m_Zo
 Game::~Game()
 {
   delete this->renderer;
+  ImGui_ImplOpenGL3_Shutdown();
+  ImGui_ImplGlfw_Shutdown();
+  ImGui::DestroyContext();
 }
 
-void Game::Init()
+void Game::Init(GLFWwindow *window)
 {
   ResourceManager::LoadShader("D:/Dev/Cpp/OpenGL/atlas/src/shaders/quad.vert", "D:/Dev/Cpp/OpenGL/atlas/src/shaders/quad.frag", "quad");
   ResourceManager::LoadShader("D:/Dev/Cpp/OpenGL/atlas/src/shaders/font.vert", "D:/Dev/Cpp/OpenGL/atlas/src/shaders/font.frag", "font");
@@ -35,6 +41,22 @@ void Game::Init()
 
   this->renderer = new Renderer();
   this->renderer->Init();
+
+  this->m_Window = window;
+
+  // Setup Dear ImGui context
+  IMGUI_CHECKVERSION();
+  ImGui::CreateContext();
+  ImGuiIO &io = ImGui::GetIO();
+  (void)io;
+  io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
+  io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
+
+  // Setup Dear ImGui style
+  ImGui::StyleColorsDark();
+
+  ImGui_ImplGlfw_InitForOpenGL(m_Window, true);
+  ImGui_ImplOpenGL3_Init("#version 330");
 }
 
 void Game::Update(float dt)
@@ -96,4 +118,29 @@ void Game::HandleInput(float dt)
   {
     m_Pos.y -= 10.0f * dt;
   }
+}
+
+void Game::ImGuiRender()
+{
+  // Start the Dear ImGui frame
+  ImGui_ImplOpenGL3_NewFrame();
+  ImGui_ImplGlfw_NewFrame();
+  ImGui::NewFrame();
+
+  {
+    ImGuiIO &io = ImGui::GetIO();
+
+    ImGui::Begin("Statistics");
+
+    ImGui::Text("App average: %.1f FPS", io.Framerate);
+    ImGui::Text("Quads drawn: %d", this->renderer->GetStats().QuadCount);
+    ImGui::Text("Draw calls:  %d", this->renderer->GetStats().DrawCalls);
+
+    ImGui::End();
+  }
+
+  ImGui::Render();
+  int display_w, display_h;
+  glfwGetFramebufferSize(m_Window, &display_w, &display_h);
+  ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
