@@ -7,10 +7,10 @@
 
 enum SpriteType
 {
-  VELHO,
-  LEPAKKO,
-  GRASS,
-  GUY
+  GRASS_01,
+  GRASS_02,
+  GRASS_03,
+  PLAYER,
 };
 
 struct Sprite

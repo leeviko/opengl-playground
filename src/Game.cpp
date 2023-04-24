@@ -31,7 +31,7 @@ void Game::Init(GLFWwindow *window)
 
   ResourceManager::GetShader("quad").Use().SetIntegerv("u_Textures", samplers);
 
-  Assets::Get().LoadAtlas("D:/ART/Aseprite/Atlas.png", "atlas");
+  Assets::Get().LoadAtlas("D:/Dev/Cpp/OpenGL/atlas/src/assets/tilemap.png", "atlas_01");
 
   Assets::Get().LoadSprites();
 
@@ -80,14 +80,14 @@ void Game::Update(float dt)
   {
     for (int j = -25; j < 25; j++)
     {
-      renderer->DrawQuad({i, j}, {1.0f, 1.0f}, Assets::Get().GetSprite(GRASS));
+      renderer->DrawQuad({i, j}, {1.0f, 1.0f}, Assets::Get().GetSprite(GRASS_01));
     }
   }
 
   renderer->DrawText("Hello World!", &this->font, {0.0f, 0.0f}, 0.01f);
-  renderer->DrawQuad({0.0f, 0.0f}, {1.0f, 1.0f}, Assets::Get().GetSprite(GRASS));
+  renderer->DrawQuad({0.0f, 0.0f}, {1.0f, 1.0f}, Assets::Get().GetSprite(GRASS_01));
   renderer->DrawQuad({1.0f, 0.0f}, {1.0f, 1.0f}, {1.0f, 0.5f, 0.5f, 1.0f});
-  renderer->DrawQuad({((left + right) / 2), ((top + bottom) / 2.0f)}, {1.0f, 2.0f}, Assets::Get().GetSprite(GUY));
+  renderer->DrawQuad({((left + right) / 2), ((top + bottom) / 2.0f)}, {1.0f, 1.0f}, Assets::Get().GetSprite(PLAYER));
 
   renderer->EndBatch();
   renderer->Flush();
