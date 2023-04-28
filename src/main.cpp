@@ -8,6 +8,8 @@ uint32_t SCREEN_HEIGHT = 720;
 
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
+void window_size_callback(GLFWwindow *window, int width, int height);
+void cursor_position_callback(GLFWwindow *window, double xpos, double ypos);
 
 Game game(SCREEN_WIDTH, SCREEN_HEIGHT);
 
@@ -34,10 +36,12 @@ int main()
     return -1;
   }
 
-  game.Init(window);
-
   glfwSetKeyCallback(window, key_callback);
   glfwSetScrollCallback(window, scroll_callback);
+  glfwSetWindowSizeCallback(window, window_size_callback);
+  glfwSetCursorPosCallback(window, cursor_position_callback);
+
+  game.Init(window);
 
   float deltaTime = 0.0f;
   float lastFrame = 0.0f;
@@ -82,4 +86,16 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
 {
   game.ScrollOffset = (float)yoffset;
+}
+
+void window_size_callback(GLFWwindow *window, int width, int height)
+{
+  game.Width = width;
+  game.Height = height;
+  GLCall(glViewport(0, 0, width, height));
+}
+
+void cursor_position_callback(GLFWwindow *window, double xpos, double ypos)
+{
+  game.MousePos = {(float)xpos, (float)ypos};
 }

@@ -89,6 +89,14 @@ void Game::Update(float dt)
   renderer->DrawQuad({1.0f, 0.0f}, {1.0f, 1.0f}, {1.0f, 0.5f, 0.5f, 1.0f});
   renderer->DrawQuad({((left + right) / 2), ((top + bottom) / 2.0f)}, {1.0f, 1.0f}, Assets::Get().GetSprite(PLAYER));
 
+  // Change cursor coords to NDC (-1.0 - 1.0)
+  float ndc_x = (2.0f * MousePos.x) / Width - 1.0f;
+  float ndc_y = 1.0f - (2.0f * MousePos.y) / Height;
+
+  glm::vec2 cursor_pos = glm::inverse(proj) * glm::vec4(ndc_x, ndc_y, 0.0f, 1.0f);
+
+  renderer->DrawQuad(cursor_pos, {1.0f, 1.0f}, {1.0f, 0.5f, 0.2f, 1.0f});
+
   renderer->EndBatch();
   renderer->Flush();
 }
@@ -127,6 +135,7 @@ void Game::ImGuiRender()
   ImGui_ImplGlfw_NewFrame();
   ImGui::NewFrame();
 
+  // ImGui::ShowDemoWindow();
   {
     ImGuiIO &io = ImGui::GetIO();
 
@@ -138,7 +147,18 @@ void Game::ImGuiRender()
 
     ImGui::End();
   }
+  {
+    ImGui::Begin("Textures");
 
+    ImGui::SeparatorText("Atlases");
+    for (const auto &item : ResourceManager::Textures)
+    {
+      Texture tex = item.second;
+      ImGui::Image((void *)tex.textureId, {static_cast<float>(tex.width), static_cast<float>(tex.height)});
+    }
+
+    ImGui::End();
+  }
   ImGui::Render();
   int display_w, display_h;
   glfwGetFramebufferSize(m_Window, &display_w, &display_h);

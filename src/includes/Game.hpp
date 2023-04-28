@@ -9,14 +9,15 @@ class Game
 private:
   Renderer *renderer;
   Font font;
-  uint32_t Width, Height;
   float m_ZoomLevel;
   glm::vec2 m_Pos;
   GLFWwindow *m_Window;
 
 public:
+  uint32_t Width, Height;
   bool Keys[348];
   float ScrollOffset;
+  glm::vec2 MousePos;
 
   Game(uint32_t width, uint32_t height);
   ~Game();
